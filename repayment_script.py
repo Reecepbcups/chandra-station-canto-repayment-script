@@ -19,14 +19,9 @@ Task:
 SLASH_REPAYMENT = 0.0075 # 0.75%
 ACANTO_AMOUNT = 10**18 # std cosmos is 10**6 (1_000_000)
 val_addr = "cantovaloper19e84kdf5z09u2v4gpv0m7r6dcu0p8llkf30qtv"
-PAYMENT_FROM_ADDRESS = "canto12u7rpvj0hm4wq0n7gx356qxy8nw6mzmmpy9wyc" # the --from KEY address you'll be paying from
+PAYMENT_FROM_ADDRESS = "canto12u7rpvj0hm4wq0n7gx356qxy8nw6mzmmpy9wyc" # the --from KEY address you'll be paying from, or ctrl + f in the .json file
 
-# 
-requiredDirs = {  # auto created
-    "output": ["supply", "balances","staked","validators", "airdrop_info"], 
-    "exports": [], 
-    "final": [],    
-}
+
 sections = { 
     # locations within the genesis file
     # for ijson, every section MUST end with .item to grab the values
@@ -54,22 +49,6 @@ def stream_section(fileName, key, debug=False):
         for idx, obj in enumerate(parser):
             if debug: print(f"stream_section: {idx}: {obj}")
             yield idx, obj
-
-
-def createDefaultPathsIfNotExisting():
-    for dir in requiredDirs.keys():
-        # if dir is a list
-        if isinstance(requiredDirs[dir], list) and len(requiredDirs[dir]) > 0:
-            # create parrent dir if not there
-            if not os.path.exists(f"{dir}"):
-                os.mkdir(f"{dir}")     
-            # create subdir if it doesn't exist           
-            for subdir in requiredDirs[dir]:                
-                if not os.path.exists(f"{dir}/{subdir}"):
-                    os.mkdir(f"{dir}/{subdir}")
-        else:
-            if not os.path.exists(f"{dir}"):
-                os.mkdir(f"{dir}")
 
 
 # Required for every chain we use
@@ -166,9 +145,6 @@ def GetUsersStakedAmounts():
     return paymentAmounts
 
 
-
-# amounts = GetUsersStakedAmounts()
-
 MSG_FORMAT = {"body":{"messages":[],"memo":"","timeout_height":"0","extension_options":[],"non_critical_extension_options":[]},"auth_info":{"signer_infos":[],"fee":{"amount":[],"gas_limit":"200000","payer":"","granter":""}},"signatures":[]}
 
 def pay_delegators():
@@ -187,10 +163,10 @@ def pay_delegators():
     print(f"{total_staked / ACANTO_AMOUNT:.0f}")
 
     # get current dir
-    # current_dir = os.path.dirname(os.path.realpath(__file__))
-    # with open(os.path.join(current_dir, "repayment_tx.json"), 'w') as file:
-    #     file.write(json.dumps(MSG_FORMAT, indent=4))
-    # print("Saved repayment_tx.json, just sign & broadcast")
+    current_dir = os.path.dirname(os.path.realpath(__file__))
+    with open(os.path.join(current_dir, "repayment_tx.json"), 'w') as file:
+        file.write(json.dumps(MSG_FORMAT, indent=4))
+    print("Saved repayment_tx.json, just sign & broadcast")
 
 
 if __name__ == '__main__':
